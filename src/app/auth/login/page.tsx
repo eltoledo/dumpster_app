@@ -1,23 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginUser } from "@/app/lib/api";
+import { useAuth } from '@/app/hooks/useAuth';
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
 
+    const { user, loading, login, logout } = useAuth();
+
+ useEffect(() => {
+   logout();
+  }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
+      
         e.preventDefault();
-        try {
-            await loginUser({ username, password });
-            router.push("/dashboard");
-        } catch (err) {
-            alert("Credenciales inválidas");
-        }
+         try{
+            await login(username,password);
+            router.push("/dashboard/home");
+         }catch (err: unknown) {
+          alert(err);
+         }       
     };
+
+      if (loading) return <div>Cargando...</div>;
 
     return (
         <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-4 max-w-sm mx-auto">

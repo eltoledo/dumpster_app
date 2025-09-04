@@ -1,5 +1,7 @@
-import LoginPage from "./login/page";
+import LoginPage from "@/app/auth/login/page";
 
 export default function Home() {
-    return <LoginPage />;
+    return  (<main className="flex min-h-screen flex-col p-6">
+      <LoginPage />
+      </main>);
 }

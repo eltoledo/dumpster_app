@@ -13,7 +13,7 @@ export default function Navbar() {
 
     return (
         <nav className="bg-white shadow p-4 flex justify-between items-center">
-            <h1 className="text-lg font-bold">Mi App</h1>
+            <h1 className="text-lg font-bold">Dumpsters App</h1>
             <button
                 onClick={handleLogout}
                 className="bg-red-500 text-white px-3 py-1 rounded"

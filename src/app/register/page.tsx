@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { registerUser } from "@/app/lib/api";
 
 export default function RegisterPage() {
     const [username, setUsername] = useState("");
@@ -12,8 +11,8 @@ export default function RegisterPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await registerUser({ username, password });
-            router.push("/login");
+           // await registerUser({ username, password });
+            router.push("/auth/login");
         } catch (err) {
             alert("Error al registrar");
         }
@@ -28,3 +27,5 @@ export default function RegisterPage() {
         </form>
     );
 }
+ 
+
