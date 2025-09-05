@@ -7,8 +7,8 @@ export const metadata: Metadata = {
 export default async function CustomersPage( ) {  
 
   return (
-    <main>
+    <div>
        <p>esto es Customers</p>
-    </main>
+    </div>
   );
 }

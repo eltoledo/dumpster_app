@@ -7,8 +7,8 @@ export const metadata: Metadata = {
 export default async function HomePage( ) {  
 
   return (
-    <main>
+    <div>
        <p>esto es HomePage</p>
-    </main>
+    </div>
   );
 }

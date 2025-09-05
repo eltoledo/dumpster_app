@@ -1,0 +1,372 @@
+'use client'
+import { useState, useEffect } from 'react';
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  message,
+  Space,
+  Card,
+  Typography,
+  Popconfirm,
+  Select,
+} from 'antd';
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  ReloadOutlined
+} from '@ant-design/icons'; 
+import '@ant-design/v5-patch-for-react-19';
+import { useDriver } from '@/app/hooks/useDriver';
+import { Driver } from '@/app/types/Driver';
+import PaginationControls from '@/app/ui/components/PaginationControls';
+import SearchControls from '@/app/ui/components/SearchControls';
+
+const { Title } = Typography;
+
+export default function DriversPage() {
+  const {createDriver, getDrivers, getDriverById, updateDriver,deleteDriver} = useDriver();
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingDriver, setEditingDriver] = useState<Driver>();
+  const [form] = Form.useForm();
+
+    // Estados para búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchField, setSearchField] = useState('all');
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Estados para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalDrivers, setTotalDrivers] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  // Obtener Drivers
+  const fetchDrivers =async (page = currentPage, size = pageSize, search = searchTerm, field = searchField) => {
+    setLoading(true);
+    try {
+      const response = await getDrivers(page, size,search,field);
+      setDrivers(response.data);
+      setTotalDrivers(response.total);
+      setTotalPages(response.totalPages);
+      setCurrentPage(response.page);
+      setPageSize(response.limit);
+    } catch (error:any) {
+      message.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+      
+const searchFields = [
+    { value: 'all', label: 'All fields' },
+    { value: 'fullname', label: 'Full Name' },
+    { value: 'email', label: 'Email' }, 
+    { value: 'phone', label: 'Phone' }, 
+    { value: 'address', label: 'Address' }, 
+  ];
+    // Handler para búsqueda
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1); // Resetear a primera página al buscar
+    fetchDrivers(1, pageSize, value, searchField);
+  };
+
+  // Handler para cambiar campo de búsqueda
+  const handleFieldChange = (value) => {
+    setSearchField(value);
+    if (searchTerm) {
+      setCurrentPage(1);
+      fetchDrivers(1, pageSize, searchTerm, value);
+    }
+  };
+
+    // Limpiar búsqueda
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setSearchField('all');
+    setCurrentPage(1);
+    fetchDrivers(1, pageSize, '', 'all');
+  };
+
+  // Cambiar página
+  const handlePageChange = (page:number, size:number) => {
+    setCurrentPage(page);
+    setPageSize(size);
+    fetchDrivers(page, size);
+  };
+
+  // Cambiar tamaño de página
+  const handleSizeChange = (size:number) => {
+    setCurrentPage(1);  
+    setPageSize(size);
+    fetchDrivers(1, size);
+  };
+
+  // Refrescar datos
+  const handleRefresh = () => {
+    fetchDrivers(currentPage, pageSize);
+  };
+
+  useEffect(() => {
+    fetchDrivers();
+  }, []);
+
+  // Crear Driver
+  const handleCreate = async (values:Driver) => {
+    try {
+      const newDriver = await createDriver(values);
+      setDrivers([...drivers,newDriver]); 
+
+      message.success('Driver created successfully');
+      setModalVisible(false);
+      form.resetFields();
+    } catch (error:any) {
+      message.error(error.message);
+    }
+  };
+
+  // Actualizar Driver
+  const handleUpdate = async (values:Driver) => {
+    try {
+        if(editingDriver){
+
+      const updatedDriver = await updateDriver(editingDriver.id, values);
+      setDrivers(drivers.map(driver => 
+        driver.id === editingDriver.id ? { ...driver, ...updatedDriver } : driver
+      ));
+      message.success('Driver update successfully');
+      setModalVisible(false);
+      setEditingDriver(undefined);
+      form.resetFields();}
+
+    } catch (error:any) {
+      message.error(error.message);
+    }
+  };
+
+  // Eliminar Driver
+  const handleDelete =  async (id:number) => {
+    try {
+      await deleteDriver(id);
+      message.success('Driver delete successfully'); 
+      if (drivers.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+        fetchDrivers(currentPage - 1, pageSize);
+      } else {
+        fetchDrivers(currentPage, pageSize);
+      }
+    } catch (error:any) {
+      message.error(error.message);
+    }
+  };
+
+  // Abrir modal para editar
+  const handleEdit = (driver:Driver) => {
+    setEditingDriver(driver);
+    form.setFieldsValue(driver);
+    setModalVisible(true);
+  };
+
+  // Abrir modal para crear
+  const handleAdd = () => {
+    setEditingDriver(undefined);
+    form.resetFields();
+    setModalVisible(true);
+  };
+
+  // Cerrar modal
+  const handleCancel = () => {
+    setModalVisible(false);
+    setEditingDriver(undefined);
+    form.resetFields();
+  };
+
+  // Columnas de la tabla
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      sorter: (a, b) => a.id - b.id,
+    },
+    {
+      title: 'Full Name',
+      dataIndex: 'fullname',
+      key: 'fullname',
+      sorter: (a, b) => a.username.localeCompare(b.username),
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+      sorter: (a, b) => a.username.localeCompare(b.username),
+    },  
+    {
+      title: 'Phone',
+      dataIndex: 'phone',
+      key: 'phone',
+     },
+    {
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
+    },    
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_:any, record:Driver) => (
+        <Space size="middle">
+          <Button
+            type="primary"
+            icon={<EyeOutlined />}
+            size="small"
+            onClick={() => handleEdit(record)}
+          >
+            Details 
+          </Button>
+          <Button
+            type="default"
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => handleEdit(record)}
+          >
+            Edit
+          </Button>
+          <Popconfirm
+            title="Are you sure you want to delete this driver?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              type="dashed"
+              icon={<DeleteOutlined />}
+              size="small"
+            >
+              Delete
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
+  return (
+    <div style={{ padding: '24px' }}>
+      <Card>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <Title level={2}>Drivers Management</Title>
+          <SearchControls
+          searchTerm={searchTerm}
+          searchField={searchField}
+          onSearch={handleSearch}
+          onFieldChange={handleFieldChange}
+          onClearSearch={handleClearSearch}
+          loading={loading}
+          searchFields={searchFields}
+          totalResults={totalDrivers}      
+      />
+         <Space>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={handleRefresh}
+              loading={loading}
+            >
+              Update
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleAdd}
+            >
+              New Driver
+            </Button>
+          </Space>
+        </div>
+
+         
+        <Table
+          columns={columns}
+          dataSource={drivers}
+          loading={loading}
+          rowKey="id"
+         pagination={false}
+        />
+         <PaginationControls
+          current={currentPage}
+          pageSize={pageSize}
+          total={totalDrivers}
+          onChange={handlePageChange} 
+          onSizeChange={handleSizeChange}
+          showSizeChanger={true} 
+         showTotal = {true}
+        />
+
+        <Modal
+          title={editingDriver ? 'Edit Driver' : 'New Driver'}
+          open={modalVisible}
+          onCancel={handleCancel}
+          footer={null}
+          width={600}
+        >
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={editingDriver ? handleUpdate : handleCreate}
+          >
+            <Form.Item
+              label="Full Name"
+              name="fullname"
+              rules={[{ required: true, message: 'Please enter your full name' }]}
+            >
+              <Input placeholder="Full name" />
+            </Form.Item>
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                { required: true, message: 'Please enter your email' },
+                { type: 'email', message: 'Invalid email' }
+              ]}
+            >
+              <Input placeholder="correo@ejemplo.com" />
+            </Form.Item>
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[{ required: true, message: 'Please enter your phone' }]}
+            >
+              <Input placeholder="+1 234 567 8900" />
+            </Form.Item>
+
+               <Form.Item
+              label="Address"
+              name="address"
+              rules={[{ required: true, message: 'Please enter your address' }]}
+            >
+              <Input placeholder="Address" />
+            </Form.Item>
+            
+        <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+              <Space>
+                <Button onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button type="primary" htmlType="submit">
+                  {editingDriver ? 'Update' : 'Add'}
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Modal>
+      </Card>
+    </div>
+  );
+}

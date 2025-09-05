@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CarOutlined, 
   HomeOutlined, 
@@ -12,8 +12,8 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import {  Button, Flex, Layout, Menu,  } from 'antd';
-import DumpsterLogo from '../auth/ui/logo'; 
+import {  Button, Flex, Layout, Menu, Spin,  } from 'antd';
+import DumpsterLogo from '@/app/ui/components/logo'; 
 import { useAuth } from '../hooks/useAuth';
 import { useRouter } from 'next/navigation';
 
@@ -45,7 +45,7 @@ const items: MenuItem[] = [
     getItem('Contracts', '/dashboard/contracts'),
     getItem('Fixs', '/dashboard/fixs',) 
   ]),
-   getItem('Drives', '/dashboard/drives',<CarOutlined />),
+   getItem('Drivers', '/dashboard/drivers',<CarOutlined />),
    getItem('User Management', '/dashboard/userManagement', <UserOutlined />),
     
 ];
@@ -55,16 +55,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, loading, login, logout } = useAuth();
   const router = useRouter();
  
+const [isMounted, setIsMounted] = useState(false);
 
+  useEffect(() => {
+    setIsMounted(true);
+    // Forzar repaint para aplicar estilos correctamente
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+  }, []);
    
 
  const handleMenuClick = (event:any) => {
     router.push(event.key)  
   }
 
-  return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+  return ( 
+    
+    <Layout   style={{ minHeight: '100vh',visibility: isMounted ? 'visible' : 'hidden' }}>
+      <Sider  trigger={null} collapsible collapsed={collapsed}>
         <div className="w-32 text-white md:w-40">
           {!collapsed ? <DumpsterLogo />:<></> }
         </div>
@@ -110,6 +117,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </Footer>
       </Layout>
     </Layout>
+   
+    
   );
 };
 
