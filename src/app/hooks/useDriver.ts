@@ -27,10 +27,7 @@ export function useDriver()  {
           ((searchField=="all"||searchField=="fullname") && driver.fullname.toLowerCase().includes(term)) ||
           ((searchField=="all"||searchField=="email") && driver.email.toLowerCase().includes(term)) ||
           ((searchField=="all"||searchField=="phone") && driver.phone.toLowerCase().includes(term)) ||
-          ((searchField=="all"||searchField=="address") && driver.address.toLowerCase().includes(term))/*||
-          user.phone.toLowerCase().includes(term) ||
-          (user.company?.name || '').toLowerCase().includes(term) ||
-          (user.website || '').toLowerCase().includes(term)*/
+          ((searchField=="all"||searchField=="address") && driver.address.toLowerCase().includes(term)) 
         );
       }
       // Paginación manual
