@@ -20,7 +20,7 @@ export default function LoginPage() {
         e.preventDefault();
          try{
             await login(username,password);
-            await router.push("/dashboard/home");
+            router.push("/dashboard/home");
          }catch (err: unknown) {
           alert(err);
          }       

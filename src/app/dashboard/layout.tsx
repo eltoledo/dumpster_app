@@ -1,11 +1,15 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import {
+  
   CarOutlined, 
+  ControlOutlined, 
+  DollarOutlined, 
   HomeOutlined, 
   LogoutOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined, 
+  MenuUnfoldOutlined,    
+  QuestionCircleOutlined, 
   ReconciliationOutlined,
   RestOutlined, 
   SolutionOutlined, 
@@ -41,14 +45,14 @@ const items: MenuItem[] = [
   getItem('Home', '/dashboard/home',<HomeOutlined />),
   getItem('Dumpsters', '/dashboard/dumpsters' ,<RestOutlined />),
   getItem('Customers', '/dashboard/customers',<SolutionOutlined />),
-  getItem('Contract Management', 'sub1' ,<ReconciliationOutlined />, [
-    getItem('Contracts', '/dashboard/contracts'),
-    getItem('Fixs', '/dashboard/fixs',) 
-  ]),
-   getItem('Drivers', '/dashboard/drivers',<CarOutlined />),
-   getItem('User Management', '/dashboard/userManagement', <UserOutlined />),
-    
-];
+  getItem('Contracts', '/dashboard/contracts',<ReconciliationOutlined />),
+  getItem('Fixs', '/dashboard/fixs',<DollarOutlined />) ,
+  getItem('Drivers', '/dashboard/drivers',<CarOutlined />),
+  getItem('Management', 'sub1' ,<ControlOutlined />, [
+    getItem('User ', '/dashboard/userManagement', <UserOutlined />),
+    getItem('Dumpsters Status ', '/dashboard/dumpstersStatus', <QuestionCircleOutlined />),
+  ])  
+ ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false); 
@@ -65,7 +69,7 @@ const [isMounted, setIsMounted] = useState(false);
    
 
  const handleMenuClick = (event:any) => {
-    router.push(event.key)  
+  router.push(event.key)  
   }
 
   return ( 
