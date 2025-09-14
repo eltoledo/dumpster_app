@@ -9,6 +9,6 @@ export interface Dumpster {
 export interface DumpsterStatus {
   id: number;
   status: string; 
-  color:string
+  colorStatus:string
   description: string;
 }

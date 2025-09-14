@@ -23,6 +23,7 @@ export function useDumpsterStatus()  {
         const term = searchTerm.toLowerCase();
         allDumpstersStatus = allDumpstersStatus.filter(dumpsterstatus =>
           ((searchField=="all"||searchField=="status") && dumpsterstatus.status.toLowerCase().includes(term)) ||
+          ((searchField=="all"||searchField=="colorStatus") && dumpsterstatus.status.toLowerCase().includes(term)) ||
           ((searchField=="all"||searchField=="description") && dumpsterstatus.description.toLowerCase().includes(term)) 
         );
       }
