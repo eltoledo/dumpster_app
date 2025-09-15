@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Table,
   Button,
@@ -15,6 +15,7 @@ import {
   notification,
   Badge,
   ColorPicker,
+  Spin,
 } from 'antd';
 import {
   PlusOutlined,
@@ -39,6 +40,7 @@ export default function DumpsterStatusPage() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingDumpsterStatus, setEditingDumpsterStatus] = useState<DumpsterStatus>();
   const [form] = Form.useForm();
+  const hasShown = useRef(false);
 
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,7 +65,10 @@ export default function DumpsterStatusPage() {
       setCurrentPage(response.page);
       setPageSize(response.limit);
     } catch (error:any) {
-      message.error(error.message);
+       if (!hasShown.current) {
+      hasShown.current = true
+     message.error(error.message);
+    }
     } finally {
       setLoading(false);
     }
@@ -260,6 +265,18 @@ export default function DumpsterStatusPage() {
     },
   ];
 
+  if (loading) {
+          return <Spin 
+                  size="large"
+                  className="custom-spin"
+                   style={{
+                           position: 'absolute',
+                           top: '50%',
+                           left: '50%',
+                           transform: 'translate(-50%, -50%)'
+                          }}
+                  />
+        } 
   return (
     <div style={{ padding: '24px' }}>
       <Card>

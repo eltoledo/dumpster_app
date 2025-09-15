@@ -105,3 +105,9 @@ body {
 }
  
  
+
+ 
+
+.custom-spin .ant-spin-dot-item {
+  background-color: #97161a; 
+}

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Table,
   Button,
@@ -12,7 +12,8 @@ import {
   Typography,
   Popconfirm,
   Select,
-  Badge,  
+  Badge,
+  Spin,  
 } from 'antd';
 import {
   PlusOutlined,
@@ -40,6 +41,7 @@ export default function DumpsterPage() {
   const [selectDumsterStatus, setSelectDumsterStatus] = useState<Dumpster>();
   
   const [form] = Form.useForm();
+  const hasShown = useRef(false);
 
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,7 +66,10 @@ export default function DumpsterPage() {
       setCurrentPage(response.page);
       setPageSize(response.limit);
     } catch (error:any) {
-      message.error(error.message);
+      if (!hasShown.current) {
+      hasShown.current = true
+     message.error(error.message);
+    }
     } finally {
       setLoading(false);
     }
@@ -121,6 +126,7 @@ export default function DumpsterPage() {
   };
 
   useEffect(() => {
+    setLoading(true)
     fetchDumpsters();
   }, []);
 
@@ -267,6 +273,19 @@ export default function DumpsterPage() {
       ),
     },
   ];
+
+ if (loading) {
+         return <Spin 
+                 size="large"
+                 className="custom-spin"
+                  style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)'
+                         }}
+                 />
+       } 
 
   return (
     <div style={{ padding: '24px' }}>

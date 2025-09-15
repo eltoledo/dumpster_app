@@ -4,14 +4,13 @@ import { User } from '@/app/types/User';
 import axios from 'axios';
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null); 
   const [error, setError] = useState<string | null>(null);
 
   const login = async (username: string, password: string) => {
     
     try {
-    setLoading(true);
+    
     setError(null)
     const response = await api.post('/auth/login', { username, password });
     const user = response.data;
@@ -30,7 +29,7 @@ export function useAuth() {
             throw new Error(message);
     }
     }finally{
-      setLoading(false);
+     
     }
     
     return user;
@@ -42,5 +41,5 @@ export function useAuth() {
     setUser(null);    
   };
 
-  return { user, loading,error, login, logout };
+  return { user,error, login, logout };
 }

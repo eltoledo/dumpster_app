@@ -56,7 +56,7 @@ const items: MenuItem[] = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false); 
-  const { user, loading, login, logout } = useAuth();
+  const { user, login, logout } = useAuth();
   const router = useRouter();
  
 const [isMounted, setIsMounted] = useState(false);

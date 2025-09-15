@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Table,
   Button,
@@ -15,6 +15,7 @@ import {
   notification,
   Tag,
   Divider,
+  Spin,
 } from 'antd';
 import {
   PlusOutlined,
@@ -40,7 +41,7 @@ export default function CustomersPage() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer>();
   const [form] = Form.useForm();
-
+  const hasShown = useRef(false);
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState('');
   const [searchField, setSearchField] = useState('all');
@@ -64,7 +65,10 @@ export default function CustomersPage() {
       setCurrentPage(response.page);
       setPageSize(response.limit);
     } catch (error:any) {
-      message.error(error.message);
+      if (!hasShown.current) {
+      hasShown.current = true
+     message.error(error.message);
+    } 
     } finally {
       setLoading(false);
     }
@@ -234,7 +238,6 @@ export default function CustomersPage() {
       key: 'description',
       sorter: (a, b) => a.name.localeCompare(b.name),
     }, 
-    , 
     {
       title: 'Work Addresses',
       dataIndex: 'workAddresses',
@@ -289,11 +292,24 @@ export default function CustomersPage() {
     },
   ];
 
+  if (loading) {
+        return <Spin 
+                size="large"
+                className="custom-spin"
+                 style={{
+                         position: 'absolute',
+                         top: '50%',
+                         left: '50%',
+                         transform: 'translate(-50%, -50%)'
+                        }}
+                />
+      } 
   return (
     <div style={{ padding: '24px' }}>
       <Card>
+         <Title level={2}>Customers Management</Title>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <Title level={2}>Customers Management</Title>
+         
            <SearchControls
           searchTerm={searchTerm}
           searchField={searchField}
@@ -394,9 +410,7 @@ export default function CustomersPage() {
              <TextArea rows={2} placeholder="Description" />
             </Form.Item>
 
-           
-
-      {/* Campos dinámicos - Teléfonos */}
+            
       <Form.List name="workAddresses">
         {(fields, { add, remove }) => (
           <div style={{ width: '100%'}}>
