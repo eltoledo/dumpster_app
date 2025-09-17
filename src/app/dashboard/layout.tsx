@@ -60,8 +60,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
  
 const [isMounted, setIsMounted] = useState(false);
-
+ const width = window.innerWidth;
   useEffect(() => {
+    if( width<576){
+      setCollapsed(true);
+    }else{
+      setCollapsed(false)
+    }
     setIsMounted(true);
     // Forzar repaint para aplicar estilos correctamente
     setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
@@ -74,7 +79,7 @@ const [isMounted, setIsMounted] = useState(false);
 
   return ( 
     
-    <Layout   style={{ minHeight: '100vh',visibility: isMounted ? 'visible' : 'hidden' }}>
+    <Layout   style={{ minHeight: '100vh',minWidth: '90vh',visibility: isMounted ? 'visible' : 'hidden' }}>
       <Sider  trigger={null} collapsible collapsed={collapsed}>
         <div className="w-32 text-white md:w-40">
           {!collapsed ? <DumpsterLogo />:<></> }
