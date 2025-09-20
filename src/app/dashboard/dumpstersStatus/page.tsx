@@ -76,8 +76,8 @@ export default function DumpsterStatusPage() {
 
     const searchFields = [
     { value: 'all', label: 'All fields' },
-    { value: 'status', label: 'Status name' },
-    { value: 'colorStatus', label: 'Color' }, 
+    { value: 'name', label: 'Status name' },
+    { value: 'colorCode', label: 'Color' }, 
      { value: 'description', label: 'Description' }, 
   ];
     // Handler para búsqueda
@@ -207,16 +207,19 @@ export default function DumpsterStatusPage() {
     },
     {
       title: 'Status Name',
-      dataIndex: 'status',
-      key: 'status',
+      dataIndex: 'name',
+      key: 'name',
       sorter: (a, b) => a.status.localeCompare(b.status),
     },
     {
       title: 'Color',
-      dataIndex: 'colorStatus',
-      key: 'colorStatus',
-      render: (colorStatus:string) => (
-               <Badge.Ribbon text={colorStatus} color={colorStatus}/>
+      dataIndex: 'colorCode',
+      key: 'colorCode',
+      render: (colorCode:string) => (
+        <div>
+          <Badge  size="small" text={colorCode} color={colorCode}/>
+        </div>
+               
             ) 
     },
     {
@@ -292,7 +295,8 @@ export default function DumpsterStatusPage() {
           searchFields={searchFields}
           totalResults={totalDumpstersStatus}      
       />
-         <Space>
+      <Card size="small" style={{ marginBottom: '16px', backgroundColor: '#fafafa' }}>
+           <Space>
             <Button
               icon={<ReloadOutlined />}
               onClick={handleRefresh}
@@ -308,6 +312,7 @@ export default function DumpsterStatusPage() {
               New Dumpster Status
             </Button>
           </Space>
+          </Card>
         </div>   
    
        <Table
@@ -341,7 +346,7 @@ export default function DumpsterStatusPage() {
           >
             <Form.Item
               label="Status Name"
-              name="status"
+              name="name"
               rules={[{ required: true, message: 'Please enter status name' }]}
             >
               <Input placeholder="status name" />
@@ -349,7 +354,7 @@ export default function DumpsterStatusPage() {
 
             
              <Form.Item
-               name="colorStatus"
+               name="colorCode"
                label="Color"
                rules={[{ required: true, message: 'Please enter color' }]}
               >
@@ -359,7 +364,7 @@ export default function DumpsterStatusPage() {
                  size="large"
                  disabledAlpha
                  onChange={(color) => {
-                  form.setFieldsValue({ colorStatus: color.toHexString() });
+                  form.setFieldsValue({ colorCode: color.toHexString() });
                 }}
                  
                 />

@@ -8,7 +8,8 @@ export interface Dumpster {
 
 export interface DumpsterStatus {
   id: number;
-  status: string; 
-  colorStatus:string
-  description: string;
+  name: string; 
+  colorCode:string;
+  isActive:string;
+  description: string;  
 }

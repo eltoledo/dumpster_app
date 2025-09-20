@@ -16,14 +16,14 @@ export function useDumpsterStatus()  {
   // READ
   const getDumpstersStatus = async (page = 1, limit = 10,searchTerm = '',searchField= '') => {
     try {
-      const response = await api.get('/dumpstersstatus');
+      const response = await api.get('/dumpsterstatus');
       let  allDumpstersStatus:DumpsterStatus[] = response.data;
       // Aplicar filtro de búsqueda si hay término
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         allDumpstersStatus = allDumpstersStatus.filter(dumpsterstatus =>
-          ((searchField=="all"||searchField=="status") && dumpsterstatus.status.toLowerCase().includes(term)) ||
-          ((searchField=="all"||searchField=="colorStatus") && dumpsterstatus.status.toLowerCase().includes(term)) ||
+          ((searchField=="all"||searchField=="name") && dumpsterstatus.name.toLowerCase().includes(term)) ||
+          ((searchField=="all"||searchField=="colorCode") && dumpsterstatus.colorCode.toLowerCase().includes(term)) ||
           ((searchField=="all"||searchField=="description") && dumpsterstatus.description.toLowerCase().includes(term)) 
         );
       }
