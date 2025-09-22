@@ -107,7 +107,10 @@ body {
  
 
  
+.card-work-address .ant-card-body{
+padding: 3px !important;
 
+}
 .custom-spin .ant-spin-dot-item {
   background-color: #97161a; 
 }

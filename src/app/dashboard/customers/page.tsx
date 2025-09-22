@@ -10,20 +10,20 @@ import {
   Space,
   Card,
   Typography,
-  Popconfirm,
-  Select,
-  notification,
-  Tag,
+  Popconfirm,  
   Divider,
-  Spin,
+  Spin, 
+  List,
+  Row,
+  Col,
 } from 'antd';
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
-  ReloadOutlined,
-  MinusCircleOutlined
+  ReloadOutlined, 
+  FileAddOutlined
 } from '@ant-design/icons'; 
 import '@ant-design/v5-patch-for-react-19';
 import { useCustomer } from '@/app/hooks/useCustomer';
@@ -35,12 +35,14 @@ import TextArea from 'antd/es/input/TextArea';
 const { Title } = Typography;
 
 export default function CustomersPage() {
-  const {createCustomer, getCustomers, getCustomersById, updateCustomer,deleteCustomer} = useCustomer();
+  const {createCustomer, getCustomers, updateCustomer,deleteCustomer,createWorkAddress,deleteWorkAddress} = useCustomer();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+   const [modaleWorkAddressVisible, setModaleWorkAddressVisible] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer>();
   const [form] = Form.useForm();
+   const [formw] = Form.useForm();
   const hasShown = useRef(false);
   // Estados para búsqueda
   const [searchTerm, setSearchTerm] = useState('');
@@ -80,8 +82,7 @@ export default function CustomersPage() {
     { value: 'homeAddress', label: 'Home Address' }, 
     { value: 'email', label: 'Email' }, 
     { value: 'phone', label: 'Phone' }, 
-    { value: 'description', label: 'Description' }, 
-    { value: 'workAddresses', label: 'Work Addresses' },
+    { value: 'description', label: 'Description' },  
   ];
     // Handler para búsqueda
   const handleSearch = (value) => {
@@ -144,6 +145,18 @@ export default function CustomersPage() {
     }
   };
 
+   const handleCreateWorkAddress = async (values:WorkAddress) => {
+    try {
+      await createWorkAddress(values);
+       fetchCustomers();
+
+      message.success('Work Address created successfully');
+      setModaleWorkAddressVisible(false);
+      formw.resetFields();
+    } catch (error:any) {
+      message.error(error.message);
+    }
+  };
   // Actualizar usuario
   const handleUpdate = async (values:Customer) => {
     try {
@@ -186,11 +199,36 @@ export default function CustomersPage() {
     setModalVisible(true);
   };
 
+  const handleDeleteWorkAddress =  async (id:number) => {
+    try {
+      await deleteWorkAddress(id);
+      message.success('Work Address delete successfully'); 
+      fetchCustomers();
+
+    } catch (error:eny) {
+      message.error(error.message);
+    }
+  };
+
+   
+ 
+
   // Abrir modal para crear
   const handleAdd = () => {
     setEditingCustomer(undefined);
     form.resetFields();
     setModalVisible(true);
+  };
+
+   const handleAddWorkAddress = (customer:Customer) => {
+
+    formw.resetFields();
+    formw.setFieldsValue({
+            customerId: customer.id,
+            latitude:"1",
+            longitude:"1",
+          });
+    setModaleWorkAddressVisible(true);
   };
 
   // Cerrar modal
@@ -199,6 +237,51 @@ export default function CustomersPage() {
     setEditingCustomer(undefined);
     form.resetFields();
   };
+
+   
+   const handleworkAddressCancel = () => {
+    setModaleWorkAddressVisible(false); 
+    formw.resetFields();
+  };
+ 
+   const expandedRowRender = (customer:Customer) => {
+  return (
+     <List
+    itemLayout="horizontal"
+    dataSource={customer.workAddress}
+    renderItem={(item:WorkAddress) => (
+      <List.Item style={{ padding: '0px', display:'block'}}>
+         <Card className='card-work-address'>
+         <Row  gutter={16}>
+          <Col span={24}><p><strong>Work Address:</strong> {item.address}</p></Col> 
+        </Row>
+        <Row gutter={16}>
+          <Col span={6}> <p><strong>Zip Code:</strong> {item.zipCode}</p></Col>
+          <Col span={6}> <p><strong>Contact Name:</strong> {item.contactName || 'No disponible'}</p></Col>
+          <Col span={6}> <p><strong>Contact Phone:</strong> {item.contactPhone || 'No disponible'}</p></Col>
+          <Col span={6}><Popconfirm
+            title="Are you sure you want to delete this work address?"
+            onConfirm={() => handleDeleteWorkAddress(item.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              type="dashed"
+              icon={<DeleteOutlined />}
+              size="small"
+            >
+              Delete
+            </Button>
+          </Popconfirm>   </Col>
+          </Row>
+      </Card>
+      </List.Item>
+    )}
+  />
+    );
+  };
+  
+
 
   // Columnas de la tabla
   const columns = [
@@ -212,6 +295,12 @@ export default function CustomersPage() {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: 'Tax Id',
+      dataIndex: 'taxId',
+      key: 'taxId',
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
@@ -239,40 +328,31 @@ export default function CustomersPage() {
       sorter: (a, b) => a.name.localeCompare(b.name),
     }, 
     {
-      title: 'Work Addresses',
-      dataIndex: 'workAddresses',
-      key: 'workAddresses',
-      render: (workAddresses:[]) => (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-          {workAddresses?.map((workAddress:WorkAddress, index) => (
-            <Tag key={index} color="blue">
-              {workAddress.address}
-            </Tag>
-          ))}
-        </div>
-      ),
-    }, 
-    {
       title: 'Actions',
       key: 'actions',
       render: (_:any, record:Customer) => (
         <Space size="middle">
           <Button
+              type="primary"
+              icon={<FileAddOutlined />  }
+              size="small"
+              onClick={() =>   handleAddWorkAddress(record)}
+            
+           >
+           Work Address
+           </Button>
+          <Button
             type="primary"
             icon={<EyeOutlined />}
             size="small"
             onClick={() => handleEdit(record)}
-          >
-            Detail
-          </Button>
+          /> 
           <Button
             type="default"
             icon={<EditOutlined />}
             size="small"
             onClick={() => handleEdit(record)}
-          >
-            Edit
-          </Button>
+          />
           <Popconfirm
             title="Are you sure you want to delete this Customer?"
             onConfirm={() => handleDelete(record.id)}
@@ -283,9 +363,7 @@ export default function CustomersPage() {
               type="dashed"
               icon={<DeleteOutlined />}
               size="small"
-            >
-              Delete
-            </Button>
+            />
           </Popconfirm>
         </Space>
       ),
@@ -303,7 +381,8 @@ export default function CustomersPage() {
                          transform: 'translate(-50%, -50%)'
                         }}
                 />
-      } 
+      }
+
   return (
     <div style={{ padding: '24px' }}>
       <Card>
@@ -320,6 +399,7 @@ export default function CustomersPage() {
           searchFields={searchFields}
           totalResults={totalCustomers}      
       />
+       <Card size="small" style={{ marginBottom: '16px', backgroundColor: '#fafafa' }}>
          <Space>
             <Button
               icon={<ReloadOutlined />}
@@ -336,6 +416,7 @@ export default function CustomersPage() {
               New Customer
             </Button>
           </Space>
+          </Card>
         </div>   
    
        <Table
@@ -343,8 +424,12 @@ export default function CustomersPage() {
           dataSource={customers}
           loading={loading}
           rowKey="id"
-         pagination={false}
-        />
+          pagination={false}
+          expandable={{
+                       expandedRowRender,
+                       defaultExpandedRowKeys: ['0'], 
+                      }}
+        />           
 
          <PaginationControls
           current={currentPage}
@@ -355,6 +440,108 @@ export default function CustomersPage() {
           showSizeChanger={true} 
          showTotal = {true}
         />
+
+        <Modal
+          title={ 'New Work Address'}
+          open={modaleWorkAddressVisible}
+          onCancel={handleworkAddressCancel}
+          footer={null}
+          width={600}
+        >
+          <Form
+            form={formw}
+            layout="vertical"
+            onFinish={handleCreateWorkAddress}
+          >
+            <Form.Item
+              name="customerId"
+              hidden
+            >
+              <Input />
+            </Form.Item>
+             <Form.Item
+              name="latitude"
+              hidden
+            >
+              <Input />
+            </Form.Item>
+             <Form.Item
+              name="longitude"
+              hidden
+            >
+              <Input />
+            </Form.Item>
+
+             <Form.Item
+              label="Name"
+              name="name"
+              rules={[{ required: true, message: 'Please enter this field' }]}
+            >
+              <Input placeholder="Name" />
+            </Form.Item>
+
+             <Form.Item
+              label="Address"
+              name="address"
+              rules={[{ required: true, message: 'Please enter this field' }]}
+            >
+              <Input placeholder="Address" />
+            </Form.Item>
+
+             <Form.Item
+              label="City"
+              name="city"
+              rules={[{ required: true, message: 'Please enter this field' }]}
+            >
+              <Input placeholder="City" />
+            </Form.Item>
+
+            <Form.Item
+              label="State"
+              name="state"
+              rules={[{ required: true, message: 'Please enter this field' }]}
+            >
+              <Input placeholder="State" />
+            </Form.Item>
+
+             <Form.Item
+              label="Zip Code"
+              name="zipCode"
+              rules={[{ required: true, message: 'Please enter this field' }]}
+            >
+              <Input placeholder="Zip Code" />
+            </Form.Item>
+
+             <Form.Item
+              label="Contact Name"
+              name="contactName"
+              rules={[{ required: true, message: 'Please enter this field' }]}
+            >
+              <Input placeholder="Contact Name" />
+            </Form.Item>
+            
+             <Form.Item
+              label="Contact Phone"
+              name="contactPhone"
+              rules={[{ required: true, message: 'Please enter this field' }]}
+            >
+              <Input placeholder="Contact Phone" />
+            </Form.Item>
+ 
+            
+        <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+              <Space>
+                <Button onClick={handleworkAddressCancel}>
+                  Cancel
+                </Button>
+                <Button type="primary" htmlType="submit">
+                  {'Add'}
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Modal>
+
         <Modal
           title={editingCustomer ? 'Edit Customer' : 'New Customer'}
           open={modalVisible}
@@ -376,12 +563,44 @@ export default function CustomersPage() {
               <Input placeholder="Name" />
             </Form.Item>
 
+             <Form.Item
+              label="Tax Id"
+              name="taxId"
+              rules={[{ required: true, message: 'Please enter your tax id' }]}
+            >
+              <Input placeholder="Tax Id" />
+            </Form.Item>
+
             <Form.Item
               label="Home Address"
               name="homeAddress"
               rules={[{ required: true, message: 'Please enter your home address' }]}
             >
               <TextArea rows={2} placeholder="Home Address" />
+            </Form.Item>
+
+            <Form.Item
+              label="City"
+              name="city"
+              rules={[]}
+            >
+              <Input  placeholder="City" />
+            </Form.Item>
+
+            <Form.Item
+              label="State"
+              name="state"
+              rules={[]}
+            >
+              <Input  placeholder="State" />
+            </Form.Item>
+
+            <Form.Item
+              label="Zip Code"
+              name="zipCode"
+              rules={[]}
+            >
+              <Input  placeholder="Zip Code" />
             </Form.Item>
 
             <Form.Item
@@ -409,39 +628,7 @@ export default function CustomersPage() {
             >
              <TextArea rows={2} placeholder="Description" />
             </Form.Item>
-
             
-      <Form.List name="workAddresses">
-        {(fields, { add, remove }) => (
-          <div style={{ width: '100%'}}>
-            {fields.map(({ key, name, ...restField }) => (
-             
-                 
-                <Form.Item
-                 key={key}
-                  {...restField}
-                  name={[name, 'address']}
-                  rules={[{ required: true, message: 'Please enter your work addresses' }]}
-                >
-                  <Space.Compact style={{ width: '100%',rowGap: 16}} >
-                  <TextArea rows={2} placeholder="Work Addresses" style={{ width: '100%',marginRight: 8}}/>
-                 <MinusCircleOutlined onClick={() => remove(name)} />
-                  </Space.Compact>
-                </Form.Item>
-                  
-                
-               
-             
-            ))}
-            <Form.Item>
-              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-               Add work addresses
-              </Button>
-            </Form.Item>
-          </div>
-        )}
-      </Form.List>
-
       <Divider />
             
         <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>

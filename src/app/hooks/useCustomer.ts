@@ -1,5 +1,5 @@
  import { api } from "../lib/api";
-import { Customer } from "../types/Customer";
+import { Customer, WorkAddress } from "../types/Customer";
 
 export function useCustomer()  { 
     
@@ -10,6 +10,15 @@ export function useCustomer()  {
       return response;
     } catch (error) {
       throw new Error('Error create customers');
+    }
+  };
+
+  const createWorkAddress = async (workAddress:WorkAddress) => {
+    try {
+      const response : WorkAddress = (await api.post('/customers/workaddress', workAddress)).data;
+      return response;
+    } catch (error) {
+      throw new Error('Error create Work Address');
     }
   };
 
@@ -82,5 +91,14 @@ export function useCustomer()  {
     }
   };
 
-  return {createCustomer, getCustomers, getCustomersById, updateCustomer,deleteCustomer};
+  const deleteWorkAddress = async (id:number) => {
+    try {
+      const response = await api.delete(`/customers/workaddress/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error('Error delete Work Address');
+    }
+  };
+
+  return {createCustomer, getCustomers, getCustomersById, updateCustomer,deleteCustomer,createWorkAddress,deleteWorkAddress};
 };
