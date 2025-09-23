@@ -1,32 +1,34 @@
-import React, { useEffect } from 'react';
 import { Select } from 'antd'; 
 import { useSelectDumsterStatus } from '@/app/hooks/useSelectDumsterStatus';
 
 const SelectDumsterStatus = ({ onValueChange }) => {
   const {
-    dumstersStatus, 
+     dumstersStatus,  
+    dumstersStatusMap,    
     loading,
-    fetchDumsterStatus, 
+    fetchDumsterStatus,
+    getObjectById
   } = useSelectDumsterStatus();
 
-  useEffect(() => {
-      fetchDumsterStatus();
-    }, []);
-    
-     const handleChange = (value) => {
-    console.log('Valor seleccionado en CustomSelect:', value);
-    if (onValueChange) {
-      onValueChange(value); // Pasamos el valor al padre
-    }
-  };
+  
+    const finalOptions = dumstersStatus.length > 0 ? dumstersStatus :  [];
+     
+     const handleChange = (value) => {  
+       
+      if (onValueChange) {       
+      onValueChange(getObjectById(value));
+        }
+      };
+
+
   return (
     <Select
       style={{ width: 200 }}
-      placeholder="Selecciona una opción"
+       placeholder="Selec Dumster State"
       loading={loading}
-      options={dumstersStatus.map(option => ({
-        value: option,
-        label: option.status
+      options={finalOptions.map(option => ({
+        value: option.id.toString(),
+        label: option.name
       }))}
       filterOption={false} // Pasando método del hook
       onChange={handleChange}      

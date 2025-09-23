@@ -16,6 +16,7 @@ import {
   Badge,
   ColorPicker,
   Spin,
+  Tag,
 } from 'antd';
 import {
   PlusOutlined,
@@ -217,7 +218,9 @@ export default function DumpsterStatusPage() {
       key: 'colorCode',
       render: (colorCode:string) => (
         <div>
-          <Badge  size="small" text={colorCode} color={colorCode}/>
+           <Tag color={colorCode} key={colorCode}>
+              {colorCode.toUpperCase()}
+            </Tag>
         </div>
                
             ) 

@@ -1,18 +1,28 @@
 import { useState, useEffect } from 'react';
 import { DumpsterStatus } from '../types/Dumpster';
+import { api } from '../lib/api';
 
 export const useSelectDumsterStatus = () => {
-  const [dumstersStatus, setDumstersStatus] = useState<DumpsterStatus[]>([]);   
+  const [dumstersStatus, setDumstersStatus] = useState([]);  
+  const [dumstersStatusMap, setDumstersStatusMap] = useState(new Map());    
   const [loading, setLoading] = useState(false);
+
 
  
   const fetchDumsterStatus = async () => {
     setLoading(true);
     try {
-     
-      const response = await fetch('/api/dumpsterstatus');
-      const data = await response.json();
-      setDumstersStatus(data);
+       const response = await api.get('/dumpsterstatus');       
+      setDumstersStatus(response.data);
+
+
+       const newMap = new Map();
+      response.data.forEach(item => {
+        newMap.set(item.id.toString(), item);
+      });    
+      
+      setDumstersStatusMap(newMap);
+ 
     } catch (error) {
       console.error('Error fetching dumster status:', error);
     } finally {
@@ -20,11 +30,19 @@ export const useSelectDumsterStatus = () => {
     }
   };
  
- 
+  const getObjectById = (id) => {    
+    return dumstersStatusMap.get(id.toString());
+  };
+
+    useEffect(() => {
+    fetchDumsterStatus();
+  }, []);
 
   return {
-    dumstersStatus,    
+    dumstersStatus,  
+    dumstersStatusMap,    
     loading,
-    fetchDumsterStatus
+    fetchDumsterStatus,
+    getObjectById
   };
 };

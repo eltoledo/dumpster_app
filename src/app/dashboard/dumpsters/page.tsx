@@ -13,7 +13,8 @@ import {
   Popconfirm,
   Select,
   Badge,
-  Spin,  
+  Spin,
+  Tag,  
 } from 'antd';
 import {
   PlusOutlined,
@@ -38,7 +39,7 @@ export default function DumpsterPage() {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingDumpster, setEditingDumpster] = useState<Dumpster>();
-  const [selectDumsterStatus, setSelectDumsterStatus] = useState<Dumpster>();
+  
   
   const [form] = Form.useForm();
   const hasShown = useRef(false);
@@ -216,16 +217,18 @@ export default function DumpsterPage() {
     },
     {
       title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'serialNumber',
+      key: 'serialNumber',
       sorter: (a, b) =>  a.name.localeCompare(b.name),
     },    
     {
       title: 'Dumpster Status',
       dataIndex: 'dumpsterStatus',
       key: 'dumpsterStatus',
-        render: (dumpsterStatus:DumpsterStatus) => (
-               <Badge.Ribbon text={dumpsterStatus.status} color={dumpsterStatus.color}/>
+        render: (dumpsterStatus:DumpsterStatus) => ( 
+               <Tag color={dumpsterStatus.colorCode} key={dumpsterStatus.name}>
+              {dumpsterStatus.name.toUpperCase()}
+            </Tag>
             ) 
     },
     {
@@ -365,7 +368,7 @@ export default function DumpsterPage() {
 
             <Form.Item
               label=" Name"
-              name="name"
+              name="serialNumber"
               rules={[{ required: true, message: 'Please enter dumpster id' }]}
             >
               <Input placeholder="Name" />
@@ -378,8 +381,14 @@ export default function DumpsterPage() {
             >
                
           <SelectDumsterStatus onValueChange={(value) =>
-              setSelectDumsterStatus(value)
-            }/> 
+              {
+               
+               form.setFieldsValue({
+               dumpsterStatus: value,
+              });
+              }
+            }
+            editValue={editingDumpster?.id.toString()}/> 
         </Form.Item>
             <Form.Item
               label="Description"

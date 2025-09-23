@@ -6,7 +6,7 @@ export function useDumpster()  {
   // CREATE
   const createDumpster = async (dumpsterData:Dumpster) => {
     try {
-      const response : Dumpster = (await api.post('/dumpster', dumpsterData)).data;
+      const response : Dumpster = (await api.post('/dumpsters', dumpsterData)).data;
       return response;
     } catch (error) {
       throw new Error('Error create dumpster');
@@ -16,7 +16,7 @@ export function useDumpster()  {
   // READ
   const getDumpsters = async (page = 1, limit = 10,searchTerm = '',searchField= '') => {
     try {
-      const response = await api.get('/dumpster');
+      const response = await api.get('/dumpsters');
       let  allDumpsters:Dumpster[] = response.data;
       // Aplicar filtro de búsqueda si hay término
       if (searchTerm) {
@@ -53,7 +53,7 @@ export function useDumpster()  {
 
  const getDumpstersById = async (id:number) => {
     try {
-      const response = await api.get(`/dumpster/${id}`);
+      const response = await api.get(`/dumpsters/${id}`);
       return response.data;
     } catch (error) {
       throw new Error('Error getting dumpster');
@@ -63,7 +63,7 @@ export function useDumpster()  {
   // UPDATE
   const updateDumpster = async (id:number, dumpsterData:Dumpster) => {
     try {
-      const response = await api.put(`/dumpster/${id}`, dumpsterData);
+      const response = await api.put(`/dumpsters/${id}`, dumpsterData);
       return response.data;
     } catch (error) {
       throw new Error('Error update dumpster');
@@ -73,7 +73,7 @@ export function useDumpster()  {
   // DELETE
   const deleteDumpster = async (id:number) => {
     try {
-      const response = await api.delete(`/dumpster/${id}`);
+      const response = await api.delete(`/dumpsters/${id}`);
       return response.data;
     } catch (error) {
       throw new Error('Error delete dumpster');
