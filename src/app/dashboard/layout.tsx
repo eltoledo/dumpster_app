@@ -42,7 +42,7 @@ function getItem(
   
 
 const items: MenuItem[] = [
-  getItem('Home', '/dashboard/home',<HomeOutlined />),
+  getItem('Reports', '/dashboard/home',<HomeOutlined />),
   getItem('Dumpsters', '/dashboard/dumpsters' ,<RestOutlined />),
   getItem('Customers', '/dashboard/customers',<SolutionOutlined />),
   getItem('Contracts', '/dashboard/contracts',<ReconciliationOutlined />),
