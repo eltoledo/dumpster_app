@@ -26,6 +26,7 @@ import { useDriver } from '@/app/hooks/useDriver';
 import { Driver } from '@/app/types/Driver';
 import PaginationControls from '@/app/ui/components/PaginationControls';
 import SearchControls from '@/app/ui/components/SearchControls';
+import TextArea from 'antd/es/input/TextArea';
 
 const { Title } = Typography;
 
@@ -71,11 +72,15 @@ export default function DriversPage() {
       
 const searchFields = [
     { value: 'all', label: 'All fields' },
-    { value: 'fullname', label: 'Full Name' },
-    { value: 'email', label: 'Email' }, 
+    { value: 'firstName', label: 'First Name' },
+    { value: 'lastName', label: 'Last Name' }, 
+    { value: 'licenseNumber', label: 'License Number' }, 
+    { value: 'licenseType', label: 'License Type' }, 
     { value: 'phone', label: 'Phone' }, 
-    { value: 'address', label: 'Address' }, 
+    { value: 'email', label: 'Email' },  
   ];
+  
+  
     // Handler para búsqueda
   const handleSearch = (value) => {
     setSearchTerm(value);
@@ -202,27 +207,39 @@ const searchFields = [
       sorter: (a, b) => a.id - b.id,
     },
     {
-      title: 'Full Name',
-      dataIndex: 'fullname',
-      key: 'fullname',
-      sorter: (a, b) => a.username.localeCompare(b.username),
+      title: 'First Name',
+      dataIndex: 'firstName',
+      key: 'firstName',
+      sorter: (a, b) => a.firstName.localeCompare(b.firstName),
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-      sorter: (a, b) => a.username.localeCompare(b.username),
+      title: 'Last Name',
+      dataIndex: 'lastName',
+      key: 'lastName',
+      sorter: (a, b) => a.lastName.localeCompare(b.lastName),
     },  
+    {
+      title: 'License Number',
+      dataIndex: 'licenseNumber',
+      key: 'licenseNumber',
+      sorter: (a, b) => a.licenseNumber.localeCompare(b.licenseNumber),
+    },
+     {
+      title: 'License Type',
+      dataIndex: 'licenseType',
+      key: 'licenseType',
+      sorter: (a, b) => a.licenseType.localeCompare(b.licenseType),
+    },
     {
       title: 'Phone',
       dataIndex: 'phone',
       key: 'phone',
      },
-    {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-    },    
+     {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+     } ,    
     {
       title: 'Actions',
       key: 'actions',
@@ -232,9 +249,9 @@ const searchFields = [
             type="primary"
             icon={<EyeOutlined />}
             size="small"
-            onClick={() => handleEdit(record)}
-          >
-            Details 
+            href={`/dashboard/drivers/${record.id}/transfer`}
+            >              
+            Transfers 
           </Button>
           <Button
             type="default"
@@ -340,12 +357,45 @@ const searchFields = [
             onFinish={editingDriver ? handleUpdate : handleCreate}
           >
             <Form.Item
-              label="Full Name"
-              name="fullname"
-              rules={[{ required: true, message: 'Please enter your full name' }]}
+              label="First Name"
+              name="firstName"
+              rules={[{ required: true, message: 'Please enter this field' }]}
             >
-              <Input placeholder="Full name" />
+              <Input placeholder="First Name" />
             </Form.Item>
+
+              <Form.Item
+              label="Last Name"
+              name="lastName"
+              rules={[{ required: true, message: 'Please enter this field' }]}
+            >
+              <Input placeholder="Last Name" />
+            </Form.Item>
+
+            <Form.Item
+              label="License Number"
+              name="licenseNumber"
+              rules={[{ required: true, message: 'Please enter this field' }]}
+            >
+              <Input placeholder="License Number" />
+            </Form.Item>
+
+            <Form.Item
+              label="License Type"
+              name="licenseType"
+              rules={[{ required: true, message: 'Please enter this field' }]}
+            >
+              <Input placeholder="License Type" />
+            </Form.Item>
+
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[{ required: true, message: 'Please enter your phone' }]}
+            >
+              <Input placeholder="+1 234 567 8900" />
+            </Form.Item>
+
             <Form.Item
               label="Email"
               name="email"
@@ -355,22 +405,7 @@ const searchFields = [
               ]}
             >
               <Input placeholder="correo@ejemplo.com" />
-            </Form.Item>
-            <Form.Item
-              label="Phone"
-              name="phone"
-              rules={[{ required: true, message: 'Please enter your phone' }]}
-            >
-              <Input placeholder="+1 234 567 8900" />
-            </Form.Item>
-
-               <Form.Item
-              label="Address"
-              name="address"
-              rules={[{ required: true, message: 'Please enter your address' }]}
-            >
-              <Input placeholder="Address" />
-            </Form.Item>
+            </Form.Item>            
             
         <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
               <Space>

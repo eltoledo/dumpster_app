@@ -3,8 +3,7 @@ import { useSelectDumsterStatus } from '@/app/hooks/useSelectDumsterStatus';
 
 const SelectDumsterStatus = ({ onValueChange }) => {
   const {
-     dumstersStatus,  
-    dumstersStatusMap,    
+     dumstersStatus,     
     loading,
     fetchDumsterStatus,
     getObjectById

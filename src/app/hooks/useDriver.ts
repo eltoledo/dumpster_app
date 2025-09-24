@@ -24,10 +24,10 @@ export function useDriver()  {
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         allDrivers = allDrivers.filter(driver =>
-          ((searchField=="all"||searchField=="fullname") && driver.fullname.toLowerCase().includes(term)) ||
+        //  ((searchField=="all"||searchField=="fullname") && driver.fullname.toLowerCase().includes(term)) ||
           ((searchField=="all"||searchField=="email") && driver.email.toLowerCase().includes(term)) ||
           ((searchField=="all"||searchField=="phone") && driver.phone.toLowerCase().includes(term)) ||
-          ((searchField=="all"||searchField=="address") && driver.address.toLowerCase().includes(term)) 
+          ((searchField=="all"||searchField=="address") && driver.phone.toLowerCase().includes(term)) 
         );
       }
       // Paginación manual
@@ -47,9 +47,9 @@ export function useDriver()  {
     }
   };
 
- const getDriverById = async (id:number) => {
+ const getDriverById = async (id:string) => {
     try {
-      const response = await api.get(`/drivers/${id}`);
+      const response = await api.get(`/drivers/ById/${id}`);
       return response.data;
     } catch (error) {
       throw new Error('Error getting driver');
@@ -67,7 +67,7 @@ export function useDriver()  {
   };
 
   // DELETE
-  const deleteDriver = async (id:number) => {
+  const deleteDriver = async (id:string) => {
     try {
       const response = await api.delete(`/drivers/${id}`);
       return response.data;
