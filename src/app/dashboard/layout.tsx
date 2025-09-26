@@ -20,6 +20,7 @@ import {  Button, Flex, Layout, Menu, Spin,  } from 'antd';
 import DumpsterLogo from '@/app/ui/components/logo'; 
 import { useAuth } from '../hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -82,7 +83,13 @@ const [isMounted, setIsMounted] = useState(false);
     <Layout   style={{ minHeight: '100vh',minWidth: '90vh',visibility: isMounted ? 'visible' : 'hidden' }}>
       <Sider  trigger={null} collapsible collapsed={collapsed}>
         <div className="w-32 text-white md:w-40">
-          {!collapsed ? <DumpsterLogo />:<></> }
+          {!collapsed ?  <Image
+                       src="/dumpster_rental_logo_w.svg"  
+                       alt="Dumpster Rental"
+                       priority
+                       width={240}
+                       height={100}
+                       />:<></> }
         </div>
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} onClick={handleMenuClick} />
       </Sider>

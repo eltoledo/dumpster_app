@@ -1,10 +1,10 @@
 "use client";
-
 import {  useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from '@/app/hooks/useAuth';
-import { Spin } from "antd";
+import { Button, Form, Input, message, Spin } from "antd";
 import React from "react";
+import Image from "next/image";
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
@@ -12,20 +12,20 @@ export default function LoginPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const { user, login, logout } = useAuth();
-
+    const [form] = Form.useForm();
    React.useEffect(() => {
     setLoading(false);
     logout();
    }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async () => {
         setLoading(true);
-        e.preventDefault();
+       
          try{
             await login(username,password);
             router.push("/dashboard/home");           
-         }catch (err: unknown) {
-          alert(err);
+         }catch (error:any) { 
+           message.error(error.message);
           setLoading(false);
          }   
     };
@@ -44,12 +44,101 @@ export default function LoginPage() {
       } 
     
     return (
-       <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-4 max-w-sm mx-auto">
-            <h1 className="text-2xl">Login</h1>
-            <input placeholder="Usuario" value={username} onChange={(e) => setUsername(e.target.value)} className="border p-2" />
-            <input placeholder="Contraseña" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="border p-2" />
-            <button className="bg-green-500 text-white p-2">Entrar</button>
-        </form>
+         <div className="flex min-h-screen"> 
+      <div className="relative w-1/2 hidden lg:block">
+        <Image
+          src="/dumpster_background .png"  
+          alt="Dumpster Rental"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/30" />
+      </div>
+       
+       <div className="flex w-full lg:w-1/2 items-center justify-center bg-white p-8">
+        <div className="w-full max-w-md space-y-6">
+         
+          <div className="text-center">
+           
+            <Image
+             src="/dumpster_rental_logo.svg"  
+             alt="Dumpster Rental"
+             priority
+             width={360}
+             height={150}
+             />
+            <p className="text-gray-500">Log in to continue...</p>
+          </div>
+         <Form
+            form={form}
+            className="space-y-4"
+            layout="vertical"
+            onFinish={handleSubmit}
+          >
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                User Name
+              </label>
+              <Form.Item
+               name="username"
+              rules={[
+                { required: true, message: 'Please enter your User Name' } 
+              ]}
+            >
+              <Input 
+                value={username} 
+                onChange={(e) => setUsername(e.target.value)}
+                size="large"
+                placeholder="User Name" />
+            </Form.Item>   
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <Form.Item
+               name="password"
+              rules={[
+                { required: true, message: 'Please enter your Password' } 
+              ]}
+            >
+              <Input 
+               type="password" 
+                placeholder="********"
+                value={password} 
+                size="large"
+                onChange={(e) => setPassword(e.target.value)}  />
+
+            </Form.Item>
+               
+            </div>
+          
+              <Button
+              type="primary" 
+              style={{background: '#97161a'}} 
+              size="large" 
+              htmlType="submit" 
+              className="w-full"  >
+                   Log in
+                </Button>
+         </Form>
+
+             
+          {/*
+          <div className="flex justify-between text-sm text-gray-500">
+            <a href="#" className="hover:underline">
+              Crear cuenta
+            </a>
+            <a href="#" className="hover:underline">
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>*/}
+        </div>
+      </div>
+        </div>
+         
     );
    
 }
+ 
