@@ -1,4 +1,5 @@
- import { api } from "../lib/api";
+ import axios from "axios";
+import { api } from "../lib/api";
 import { Transfer } from "../types/Driver";
 
 export function useTransfer()  { 
@@ -9,11 +10,12 @@ export function useTransfer()  {
       const response : Transfer = (await api.post('/transfer', transferData)).data;
       return response;
     } catch (error) {
-      throw new Error('Error create Transfer.');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error create Transfer.');
     }
   };
 
-  // READ
+   // READ
   const getTransfers = async (id:string,page = 1, limit = 10,searchTerm = '',searchField= '') => {
     try {
        const response = await api.get(`/transfer/bydriver/${id}`);
@@ -22,8 +24,10 @@ export function useTransfer()  {
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         allTransfers = allTransfers.filter(transfer =>
-          ((searchField=="all"||searchField=="name") && transfer.driverName.toLowerCase().includes(term)) ||
-          ((searchField=="all"||searchField=="colorCode") && transfer.contractString.toLowerCase().includes(term)) ||
+          ((searchField=="all"||searchField=="driverName") && transfer.driverName.toLowerCase().includes(term)) ||
+          ((searchField=="all"||searchField=="transferDate") && transfer.transferDate.toString().includes(term)) ||
+           ((searchField=="all"||searchField=="transferType") && transfer.transferType.toString().includes(term)) ||
+            ((searchField=="all"||searchField=="paymentStatus") && transfer.paymentStatus.toString().includes(term)) ||
           ((searchField=="all"||searchField=="description") && transfer.description.toLowerCase().includes(term)) 
         );
       }
@@ -40,7 +44,8 @@ export function useTransfer()  {
         totalPages: Math.ceil(allTransfers.length / limit)
       };
     } catch (error) {
-      throw new Error('Error getting dumpsters status.');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting dumpsters status.');
     }
   };
 
@@ -52,7 +57,8 @@ export function useTransfer()  {
       const response = await api.put(`/Transfer/${id}`, TransferData);
       return response.data;
     } catch (error) {
-      throw new Error('Error update dumpster status.');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error update dumpster status.');
     }
   };
 
@@ -62,7 +68,8 @@ export function useTransfer()  {
       const response = await api.delete(`/Transfer/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error delete dumpster status');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error delete dumpster status');
     }
   };
 

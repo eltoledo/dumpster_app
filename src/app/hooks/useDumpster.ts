@@ -1,4 +1,5 @@
- import { api } from "../lib/api";
+ import axios from "axios";
+import { api } from "../lib/api";
 import { Dumpster, DumpsterStatus } from "../types/Dumpster";
 
 export function useDumpster()  { 
@@ -9,7 +10,8 @@ export function useDumpster()  {
       const response : Dumpster = (await api.post('/dumpsters', dumpsterData)).data;
       return response;
     } catch (error) {
-      throw new Error('Error create dumpster');
+      if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error create dumpster');
     }
   };
 
@@ -25,7 +27,7 @@ export function useDumpster()  {
           ((searchField=="all"||searchField=="name") && dumpster.name.toLowerCase().includes(term)) ||
           ((searchField=="all"||searchField=="size") && dumpster.size.toString().toLowerCase().includes(term)) ||
           ((searchField=="all"||searchField=="description") && dumpster.description.toLowerCase().includes(term)) ||
-           ((searchField=="all"||searchField=="DumpsterStatus") && searchDumpsterStatus) 
+           ((searchField=="all"||searchField=="DumpsterStatus") &&  dumpster.dumpsterStatus.name.toLowerCase().includes(term))
         );
       }
       // Paginación manual
@@ -41,22 +43,19 @@ export function useDumpster()  {
         totalPages: Math.ceil(allDumpsters.length / limit)
       };
     } catch (error) {
-      throw new Error('Error getting dumpster');
+        if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting dumpster');
     }
   };
 
-   const searchDumpsterStatus = (dumpsterStatus:DumpsterStatus[], searchTerm = '') => {
-    return dumpsterStatus.some(item => 
-            item.status.toLowerCase() === searchTerm.toLowerCase()
-        );
-  };
-
+   
  const getDumpstersById = async (id:number) => {
     try {
       const response = await api.get(`/dumpsters/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error getting dumpster');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting dumpster');
     }
   };
 
@@ -66,7 +65,8 @@ export function useDumpster()  {
       const response = await api.put(`/dumpsters/${id}`, dumpsterData);
       return response.data;
     } catch (error) {
-      throw new Error('Error update dumpster');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error update dumpster');
     }
   };
 
@@ -76,7 +76,8 @@ export function useDumpster()  {
       const response = await api.delete(`/dumpsters/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error delete dumpster');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error delete dumpster');
     }
   };
 

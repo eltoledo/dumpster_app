@@ -1,4 +1,5 @@
- import { api } from "../lib/api"; 
+ import axios from "axios";
+import { api } from "../lib/api"; 
 import { Fix } from "../types/Fix";
 export function useFix()  { 
     
@@ -8,7 +9,8 @@ export function useFix()  {
       const response : Fix = (await api.post('/fix', fixData)).data;
       return response;
     } catch (error) {
-      throw new Error('Error create dumpster status.');
+        if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error create dumpster status.');
     }
   };
 
@@ -37,7 +39,8 @@ export function useFix()  {
         totalPages: Math.ceil(allFixs.length / limit)
       };
     } catch (error) {
-      throw new Error('Error getting Fixs.');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting Fixs.');
     }
   };
 
@@ -46,7 +49,8 @@ export function useFix()  {
       const response = await api.get(`/fix/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error getting Fix.');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting Fix.');
     }
   };
 
@@ -56,7 +60,8 @@ export function useFix()  {
       const response = await api.put(`/fix/${id}`, fixData);
       return response.data;
     } catch (error) {
-      throw new Error('Error update Fix.');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error update Fix.');
     }
   };
 
@@ -66,7 +71,8 @@ export function useFix()  {
       const response = await api.delete(`/fix/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error delete Fix');
+        if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error delete Fix');
     }
   };
 

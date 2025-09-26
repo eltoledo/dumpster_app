@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { api } from '@/app/lib/api';
 import { User } from '@/app/types/User';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null); 
@@ -18,20 +18,17 @@ export function useAuth() {
     window.localStorage.setItem('authToken', user.token);
     window.localStorage.setItem('user', JSON.stringify(user)); 
     await setUser(user);
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-            const status = err.response?.status;
-            const message =
-                (err.response?.data as any)?.message ||
-                (status === 401
-                    ? "Credenciales inválidas"
-                    : "Error al iniciar sesión");
-            throw new Error(message);
-    }
-    }finally{
-     
-    }
-    
+    } catch (error) { 
+      console.log(error)     
+      if (axios.isAxiosError(error)) {
+        if(error.response?.status === 403)
+         throw new AxiosError('Invalid credentials');
+        else
+         throw new AxiosError(error.response?.data||error.message||'Error while logging in');  
+      }
+        
+    } 
+
     return user;
   };
 

@@ -1,4 +1,5 @@
- import { api } from "../lib/api";
+ import axios from "axios";
+import { api } from "../lib/api";
 import { User } from "../types/User";
 
 export function useUserManagement()  { 
@@ -8,8 +9,9 @@ export function useUserManagement()  {
     try {
       const response : User = (await api.post('/users', userData)).data;
       return response;
-    } catch (error) {
-      throw new Error('Error create user');
+    } catch (error) { 
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error create user');
     }
   };
 
@@ -42,7 +44,8 @@ export function useUserManagement()  {
         totalPages: Math.ceil(allUsers.length / limit)
       };
     } catch (error) {
-      throw new Error('Error getting users');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting users');
     }
   };
 
@@ -51,7 +54,8 @@ export function useUserManagement()  {
       const response = await api.get(`/users/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error getting user');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting user');
     }
   };
 
@@ -61,7 +65,9 @@ export function useUserManagement()  {
       const response = await api.put(`/users/${id}`, userData);
       return response.data;
     } catch (error) {
-      throw new Error('Error update user');
+      console.log(error)
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error update user');
     }
   };
 
@@ -71,7 +77,8 @@ export function useUserManagement()  {
       const response = await api.delete(`/users/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error delete user');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error delete user');
     }
   };
 

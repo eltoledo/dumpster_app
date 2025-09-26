@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DumpsterStatus } from '../types/Dumpster';
 import { api } from '../lib/api';
+import axios from 'axios';
 
 export const useSelectDumsterStatus = () => {
   const [dumstersStatus, setDumstersStatus] = useState([]);  
@@ -17,20 +18,21 @@ export const useSelectDumsterStatus = () => {
 
 
        const newMap = new Map();
-      response.data.forEach(item => {
+      response.data.forEach((item:DumpsterStatus) => {
         newMap.set(item.id.toString(), item);
       });    
       
       setDumstersStatusMap(newMap);
  
     } catch (error) {
-      console.error('Error fetching dumster status:', error);
+       if (axios.isAxiosError(error)) 
+      console.error(error.response?.data||error.message||'Error fetching dumster status:', error);
     } finally {
       setLoading(false);
     }
   };
  
-  const getObjectById = (id) => {    
+  const getObjectById = (id:number) => {    
     return dumstersStatusMap.get(id.toString());
   };
 

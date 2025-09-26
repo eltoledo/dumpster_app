@@ -1,4 +1,5 @@
- import { api } from "../lib/api";
+ import axios from "axios";
+import { api } from "../lib/api";
 import { Customer, WorkAddress } from "../types/Customer";
 
 export function useCustomer()  { 
@@ -8,8 +9,9 @@ export function useCustomer()  {
     try {
       const response : Customer = (await api.post('/customers', customersData)).data;
       return response;
-    } catch (error) {
-      throw new Error('Error create customers');
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error create customers');
     }
   };
 
@@ -18,7 +20,8 @@ export function useCustomer()  {
       const response : WorkAddress = (await api.post('/customers/workaddress', workAddress)).data;
       return response;
     } catch (error) {
-      throw new Error('Error create Work Address');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error create Work Address');
     }
   };
 
@@ -52,7 +55,8 @@ export function useCustomer()  {
         totalPages: Math.ceil(allCustomers.length / limit)
       };
     } catch (error) {
-      throw new Error('Error getting customers');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting customers');
     }
   };
 
@@ -67,7 +71,8 @@ export function useCustomer()  {
       const response = await api.get(`/customers/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error getting customers');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting customers');
     }
   };
 
@@ -77,7 +82,8 @@ export function useCustomer()  {
       const response = await api.put(`/customers/${id}`, CustomersData);
       return response.data;
     } catch (error) {
-      throw new Error('Error update customers');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error update customers');
     }
   };
 
@@ -87,7 +93,8 @@ export function useCustomer()  {
       const response = await api.delete(`/customers/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error delete customers');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error delete customers');
     }
   };
 
@@ -96,7 +103,8 @@ export function useCustomer()  {
       const response = await api.delete(`/customers/workaddress/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error delete Work Address');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error delete Work Address');
     }
   };
 

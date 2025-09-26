@@ -1,4 +1,5 @@
- import { api } from "../lib/api";
+ import axios from "axios";
+import { api } from "../lib/api";
 import { DumpsterStatus } from "../types/Dumpster";
 
 export function useDumpsterStatus()  { 
@@ -9,7 +10,8 @@ export function useDumpsterStatus()  {
       const response : DumpsterStatus = (await api.post('/dumpsterstatus', DumpsterStatusData)).data;
       return response;
     } catch (error) {
-      throw new Error('Error create dumpster status.');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error create dumpster status.');
     }
   };
 
@@ -40,7 +42,8 @@ export function useDumpsterStatus()  {
         totalPages: Math.ceil(allDumpstersStatus.length / limit)
       };
     } catch (error) {
-      throw new Error('Error getting dumpsters status.');
+       if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting dumpsters status.');
     }
   };
 
@@ -49,7 +52,8 @@ export function useDumpsterStatus()  {
       const response = await api.get(`/dumpsterstatus/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error getting dumpster status.');
+        if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting dumpster status.');
     }
   };
 
@@ -59,7 +63,8 @@ export function useDumpsterStatus()  {
       const response = await api.put(`/dumpsterstatus/${id}`, dumpsterStatusData);
       return response.data;
     } catch (error) {
-      throw new Error('Error update dumpster status.');
+        if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error update dumpster status.');
     }
   };
 
@@ -69,7 +74,8 @@ export function useDumpsterStatus()  {
       const response = await api.delete(`/dumpsterstatus/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error delete dumpster status');
+        if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error delete dumpster status');
     }
   };
 

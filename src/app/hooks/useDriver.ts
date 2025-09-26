@@ -1,4 +1,5 @@
- import { api } from "../lib/api";
+ import axios from "axios";
+import { api } from "../lib/api";
 import { Driver } from "../types/Driver";
 
 export function useDriver()  { 
@@ -9,10 +10,11 @@ export function useDriver()  {
       const response : Driver = (await api.post('/drivers', driverData)).data;
       return response;
     } catch (error) {
-      throw new Error('Error create driver');
+     if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error create driver');
     }
   };
-
+  
   // READ
   const getDrivers = async (page = 1, limit = 10,searchTerm = '',searchField= '') => {
     try {
@@ -26,8 +28,12 @@ export function useDriver()  {
         allDrivers = allDrivers.filter(driver =>
         //  ((searchField=="all"||searchField=="fullname") && driver.fullname.toLowerCase().includes(term)) ||
           ((searchField=="all"||searchField=="email") && driver.email.toLowerCase().includes(term)) ||
+          ((searchField=="all"||searchField=="firstName") && driver.lastName.toLowerCase().includes(term)) ||
+          ((searchField=="all"||searchField=="lastName") && driver.lastName.toLowerCase().includes(term)) ||
+          ((searchField=="all"||searchField=="licenseNumber") && driver.licenseNumber.toLowerCase().includes(term)) ||
+          ((searchField=="all"||searchField=="email") && driver.email.toLowerCase().includes(term)) ||
           ((searchField=="all"||searchField=="phone") && driver.phone.toLowerCase().includes(term)) ||
-          ((searchField=="all"||searchField=="address") && driver.phone.toLowerCase().includes(term)) 
+          ((searchField=="all"||searchField=="licenseType") && driver.licenseType.toLowerCase().includes(term)) 
         );
       }
       // Paginación manual
@@ -43,7 +49,8 @@ export function useDriver()  {
         totalPages: Math.ceil(allDrivers.length / limit)
       };
     } catch (error) {
-      throw new Error('Error getting drivers');
+      if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting drivers');
     }
   };
 
@@ -52,7 +59,8 @@ export function useDriver()  {
       const response = await api.get(`/drivers/ById/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error getting driver');
+      if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error getting driver');
     }
   };
 
@@ -62,7 +70,8 @@ export function useDriver()  {
       const response = await api.put(`/drivers/${id}`, driverData);
       return response.data;
     } catch (error) {
-      throw new Error('Error update driver');
+      if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error update driver');
     }
   };
 
@@ -72,7 +81,8 @@ export function useDriver()  {
       const response = await api.delete(`/drivers/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error('Error delete user');
+      if (axios.isAxiosError(error)) 
+      throw new Error(error.response?.data||error.message||'Error delete user');
     }
   };
 

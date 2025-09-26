@@ -2,11 +2,13 @@
 import {  useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from '@/app/hooks/useAuth';
-import { Button, Form, Input, message, Spin } from "antd";
+import { Button, Form, Input, Layout, message, Spin } from "antd";
 import React from "react";
 import Image from "next/image";
+import axios from "axios";
 
-export default function LoginPage() {
+export default function LoginPage() { 
+ const [messageApi, contextHolder] = message.useMessage();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
@@ -24,14 +26,18 @@ export default function LoginPage() {
          try{
             await login(username,password);
             router.push("/dashboard/home");           
-         }catch (error:any) { 
-           message.error(error.message);
+         }catch (error) { 
+            if (axios.isAxiosError(error)) {
+            messageApi.error(error.message);
+          
+            }
+            
           setLoading(false);
          }   
     };
 
-     if (loading) {
-        return <Spin 
+      if (loading) {
+        return (<Layout> {contextHolder}<Spin 
                 size="large"
                 className="custom-spin"
                  style={{
@@ -40,11 +46,13 @@ export default function LoginPage() {
                          left: '50%',
                          transform: 'translate(-50%, -50%)'
                         }}
-                />
+                /></Layout>)
       } 
     
     return (
-         <div className="flex min-h-screen"> 
+       <Layout >  
+        {contextHolder}
+         <div className="flex min-h-screen mt:300"> 
       <div className="relative w-1/2 hidden lg:block">
         <Image
           src="/dumpster_background .png"  
@@ -138,6 +146,7 @@ export default function LoginPage() {
       </div>
         </div>
          
+         </Layout>
     );
    
 }
